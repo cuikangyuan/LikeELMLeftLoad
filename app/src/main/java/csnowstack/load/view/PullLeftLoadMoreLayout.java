@@ -10,8 +10,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import csnowstack.load.R;
@@ -21,6 +23,10 @@ import csnowstack.load.R;
  */
 
 public class PullLeftLoadMoreLayout extends CoordinatorLayout {
+    private View mLastView;
+    private int mLastViewWidth;
+
+
     private LoadingView mLoadingView;
     private View mList;
     private TextView mTxt;
@@ -69,7 +75,8 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
 
 
    public void addView(int loadingHeight){
-       mLoadingHeight=loadingHeight;
+       //mLoadingHeight=loadingHeight;
+       /*
        LayoutParams layoutParamsLoading=new LayoutParams(loadingHeight,loadingHeight);
        mLoadingView=new LoadingView(mContext);
        mLoadingView.setId(R.id.ele_loading);
@@ -84,7 +91,18 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
        addView(mTxt,layoutParams);
 
        mList=getChildAt(0);
+        */
+       LayoutParams layoutParamsLoading=new LayoutParams(loadingHeight,loadingHeight);
+       mLastView = LayoutInflater.from(mContext).inflate(R.layout.tg_widget_seckill_shopping_product_item_more, this, false);
+       mLastView.setId(R.id.ele_loading);
+       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+       addView(mLastView, layoutParams);
+       mLastView.measure(0, 0);
+       //mLoadingHeight = mLastView.getMeasuredWidth();
 
+
+
+       mList=getChildAt(0);
    }
 
 
@@ -100,9 +118,14 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
             //隐藏View
             child.setTranslationX(mTxtWidth);
 
-            ((TextView)child).setText(mTxtRes[0]);
+            //((TextView)child).setText(mTxtRes[0]);
         }else if(child==mLoadingView){
             child.offsetLeftAndRight(getWidth()-child.getWidth());//移动到最右边
+        } else if (child == mLastView) {
+            child.offsetLeftAndRight(getWidth()-child.getWidth());//移动到最右边
+            child.setTranslationX(child.getWidth());
+            mLastViewWidth = child.getWidth();
+            mLoadingHeight = mLastViewWidth;
         }
     }
 
@@ -119,13 +142,16 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
         if (mList.getWidth()==getWidth() && dx>0&& !ViewCompat.canScrollHorizontally(mList,ViewCompat.SCROLL_INDICATOR_LEFT) || dx<0&&mList.getTranslationX()<0){
             consumed[0]=dx;//全部消耗掉
             int distance =dx/2;
+            //int distance = dx;
 
-            if(mTranslation-distance<=-mLoadingHeight){
-                mTranslation=-mLoadingHeight;
+            if(mTranslation-distance<=-mLastViewWidth/3*4){
+                mTranslation =-mLastViewWidth/3*4;
             }else {
-                mTranslation= mTranslation-distance;
+                mTranslation = mTranslation-distance;
             }
 
+
+            //mTranslation = mTranslation-distance;
             //列表移动
             mList.setTranslationX(mTranslation);
 
@@ -134,6 +160,9 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
 
             //load改变
             invalidateLoading(mTranslation);
+
+
+
 
 
         }else {
@@ -166,6 +195,7 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
     }
 
     private void translationTxt(float translationList) {
+        /*
         float distance=translationList/2;
         if(distance<=-mTxtWidth/3*4){
             mGo=true;
@@ -175,18 +205,30 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
             mGo=false;
             mTxt.setText(mTxtRes[0]);
             mTxt.setTranslationX(distance+mTxtWidth);
-
         }
+        */
+        float distance=translationList;
+        //distance = translationList;
+        //mList.setTranslationX(mTranslation);
+
+        if(distance<=-mLastViewWidth/3*4){
+            mGo=true;
+            mLastView.setTranslationX(-1/3f*mLastViewWidth);
+        } else {
+            mGo=false;
+            mLastView.setTranslationX(distance+mLastViewWidth);
+        }
+        Log.e("-->>","distance   "+distance + " mLastViewWidth/3*4     " + mLastViewWidth/3*4);
     }
 
 
     private void invalidateLoading(float translationList) {
-        Log.e("-->>","translationList   "+translationList);
-        Log.e("-->>","mLoadingHeight   "+mLoadingHeight);
+        //Log.e("-->>","translationList   "+translationList);
+        //Log.e("-->>","mLoadingHeight   "+mLoadingHeight);
         //列表移动的比例
         float fraction=Math.abs(translationList)/mLoadingHeight;
         //改变view
-        mLoadingView.setFraction(fraction,translationList/2);
+        //mLoadingView.setFraction(fraction,translationList/2);
     }
 
 
@@ -199,6 +241,6 @@ public class PullLeftLoadMoreLayout extends CoordinatorLayout {
     }
 
    public void setFillLoadingColor(@ColorInt int color){
-       mLoadingView.setColor(color);
+       //mLoadingView.setColor(color);
    }
 }

@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:gravity="left|center_vertical"
+              android:id="@+id/layout"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="87dp"
+        android:src="@mipmap/item_more_icon"/>
+<!--
+    <TextView
+        android:layout_marginLeft="8dp"
+        android:textColor="#ff4c48"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="1"
+        android:text="查看更多"
+        android:textSize="12dp"/>
+-->
+
+</LinearLayout>
